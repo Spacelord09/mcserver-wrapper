@@ -1,0 +1,5 @@
+Installer:
+    Server downloader:
+        https://paper.readthedocs.io/en/latest/site/api.html
+            https://papermc.io/api/v1/paper/1.15.2/latest/download
+    
