@@ -5,8 +5,7 @@ source "$exec_path"/mcctl.conf
 ################ SETUP ################
 cd $exec_path
 
-LOG () {        # Use case to switch between info / error. Usage: LOG "info" "TEXT"
-#    find /var/log/ -name somefiles.log.* -ctime +3 -delete
+LOG () {
     TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S"`
     case "$1" in
       info)    # INFO
@@ -43,8 +42,8 @@ console-check() {
 if screen -list | grep -q "$server_session"; then  
     shift 1
     if [[ -n "$1" ]]; then console "$@"; else
-        screen -r $screen_session
         LOG "info" "User $(whoami) opened the server console."
+        screen -r $screen_session
     fi
 else
     ERROR 2
@@ -56,10 +55,11 @@ start() {
     if ! screen -list | grep -q "$server_session"; then
         screen -AmdS $server_session $start_cmd
         sleep 4s
-        watchdog start
+        if ! screen -list | grep -q "$server_watch_session"; then watchdog start; fi
     else
         ERROR 1
     fi
+    exit 0
 }
 
 stop() {
@@ -126,25 +126,25 @@ killp() {
 watchdog() {
     case "$1" in
       start)
-      if ! screen -list | grep -q "$screen_watch_session"; then
+      if ! screen -list | grep -q "$server_watch_session"; then
         LOG "info" "Starting Watchdog.."
-        screen -AmdS "$screen_watch_session" "./$watch_file"
+        screen -AmdS "$server_watch_session" "./$watch_script"
       else
         ERROR 3
       fi
       ;;
       stop)
-      if screen -list | grep -q "$screen_watch_session"; then
+      if screen -list | grep -q "$server_watch_session"; then
         LOG "info" "Stopping Watchdog.."
-        screen -X -S "$screen_watch_session" stuff "^C"
+        screen -X -S "$server_watch_session" stuff "^C"
       else
         ERROR 4
       fi
       ;;
       kill)
-      if screen -list | grep -q "$screen_watch_session"; then
+      if screen -list | grep -q "$server_watch_session"; then
         LOG "warn" "Killing Watchdog.."
-        screen -X -S "$screen_watch_session" kill
+        screen -X -S "$server_watch_session" kill
       else
         ERROR 4
       fi
@@ -164,10 +164,10 @@ ERROR() {
         LOG "warn" 'Screen session('"$server_session"') is not running!'
       ;;
       3)    # Error code 2
-        LOG "warn" 'Screen session('"$screen_watch_session"') allready started!'
+        LOG "warn" 'Screen session('"$server_watch_session"') allready started!'
       ;;
       4)    # Error code 2
-        LOG "warn" 'Screen session('"$screen_watch_session"') is not running!'
+        LOG "warn" 'Screen session('"$server_watch_session"') is not running!'
       ;;
       *)    # Unknown error code
         LOG "error" 'Unknown error '"$@"'!'
@@ -180,7 +180,8 @@ ERROR() {
 ################################ MAIN ################################
 log_exec=$(echo $1)
 case $1 in
-    console)
+    console|c|co|con|cmd)
+        log_exec="console"
         console-check "$@"
     ;;
     start)
@@ -195,7 +196,8 @@ case $1 in
     kill)
         killp         #  Kills the Server & Watchdog
     ;;
-    watchdog)
+    watchdog|wdog)
+        log_exec="watchdog"
         watchdog "$2"
     ;;
     *)

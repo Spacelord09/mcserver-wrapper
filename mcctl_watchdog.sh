@@ -6,7 +6,7 @@ source "$exec_path"/mcctl.conf
 cd $exec_path
 trap exit_msg SIGINT SIGTERM SIGKILL
 
-LOG () {        # Use case to switch between info / error. Usage: LOG "info" "TEXT"
+LOG () {
     TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S"`
     case "$1" in
       info)    # INFO
@@ -42,13 +42,12 @@ LOG "info" "Watchdog is starting."
 ## Checks if the screen session exists. If not automatically restart the service!
 while true
 do
-        printf "\nLooking for Screen Session $server_session."
-        if ! screen -list | grep -q "$server_session"; then
-            LOG "warn" "Session exited. Restarting."
-#	    $exec_path/$main_script "start"
-            sleep 16s
+  if ! screen -list | grep -q "$server_session"; then
+    LOG "warn" "Session exited. Restarting!"
+    ($exec_path/$main_script "start")
+    sleep 16s
 	else
-        LOG "info" "$server_session still alive."
-        fi
-	sleep $watch_timeout
+    LOG "info" "$server_session still alive."
+  fi
+  sleep $watch_timeout
 done

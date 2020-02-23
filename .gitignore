@@ -3,3 +3,4 @@ screenlog*
 *.log
 mcctl-logs/
 test.sh
+*.log.gz
