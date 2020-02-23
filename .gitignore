@@ -1,0 +1,5 @@
+.vscode/
+screenlog*
+*.log
+mcctl-logs/
+test.sh

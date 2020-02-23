@@ -1,5 +1,34 @@
 Installer:
-    Server downloader:
-        https://paper.readthedocs.io/en/latest/site/api.html
-            https://papermc.io/api/v1/paper/1.15.2/latest/download
-    
+Add LOGFILE* folder structure
+Implement updater
+Implement config file generator (editable?)
+Implement crontab generator (scheudeled tasks like restarts)
+
+
+
+General:
+Implement auto deleteing old log files! (Only keep n logfiles)
+
+
+
+Note:
+https://devhints.io/bash
+
+Shell GUI:
+    https://medium.com/@tamirsuliman/getting-started-building-linux-bash-graphical-ui-scripts-447cee97c167
+    https://en.wikibooks.org/wiki/Bash_Shell_Scripting/Whiptail
+    https://linux.die.net/man/1/whiptail
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
